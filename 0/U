@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  10
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+     format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    
+     {
+    type            codedFixedValue;
+    value           uniform (0 0 0);   // Dummy value
+    name            sineWaveInlet;
+
+    code
+    #{
+        const scalar u0 = 15;  // Amplitude (m/s)
+        const scalar f  = 10.0;  // Frequency (Hz),k=47.5
+        const scalar pi = constant::mathematical::pi;
+        const scalar omega = 2 * pi * f;  // Angular frequency (rad/s)
+        const scalar t = this->db().time().value();
+        operator==(vector(u0 * sin(omega * t), 0, 0));
+    #};
+        }
+     
+    
+     
+    
+    outlet
+    {
+		 // type      zeroGradient;
+		
+       type            pressureInletOutletVelocity;
+       value           uniform (0 0 0);
+       
+    }
+    leftup
+    { 
+     
+        type            noSlip;
+    }
+   /* leftdown
+    {
+    
+        type            noSlip;
+    }*/
+    top
+    {
+         type           fixedValue; 
+        value           uniform (0 -0.075 0);
+
+    }
+    symplane
+    {
+       //type           fixedValue ;
+      //  value           uniform (0 0.01 0);
+      type          symmetryPlane;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //
